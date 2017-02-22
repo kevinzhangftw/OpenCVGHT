@@ -19,33 +19,57 @@
 using namespace cv;
 using namespace std;
 
+void createTemplate(){
+    Mat input_img = imread("template_K.png", 1);
+    Mat src_gray;
+    Mat detected_edges;
+    src_gray.create( Size(input_img.cols, input_img.rows), CV_8UC1);
+    cvtColor(input_img, src_gray, CV_BGR2GRAY);
+    blur( src_gray, detected_edges, Size(3,3) );
+    Canny( detected_edges, detected_edges, 1, 100, 3 );
+    imwrite("K_edge.png", detected_edges);
+}
+
+void createImageEdge(){
+    Mat input_img = imread("letters.png", 1);
+    Mat src_gray;
+    Mat detected_edges;
+    src_gray.create( Size(input_img.cols, input_img.rows), CV_8UC1);
+    cvtColor(input_img, src_gray, CV_BGR2GRAY);
+    blur( src_gray, detected_edges, Size(3,3) );
+    Canny( detected_edges, detected_edges, 1, 100, 3 );
+    imwrite("letters_edge.png", detected_edges);
+}
+
 int main(int argc, const char * argv[]) {
     // insert code here...
 //    cout<< "CV_VERSION: " << CV_VERSION << endl;
 //    char * dir = getcwd(NULL, 0); // Platform-dependent, see reference link below
 //    printf("Current dir: %s", dir);
-    Mat templ = imread("template_bear.png", IMREAD_GRAYSCALE);
-    Mat image = imread("animals2.jpg", IMREAD_GRAYSCALE);
+//    createTemplate();
+    createImageEdge();
+    Mat templ = imread("template_K.png", IMREAD_GRAYSCALE);
+    Mat image = imread("letters.png", IMREAD_GRAYSCALE);
     vector<Vec4f> position;
     Ptr<GeneralizedHough> alg;
     
     Ptr<GeneralizedHoughGuil> guil = createGeneralizedHoughGuil();
-    guil->setMinDist(100);
-    guil->setLevels(360);
+    guil->setMinDist(50);
+    guil->setLevels(60);
     guil->setDp(2);
     guil->setMaxBufferSize(1000);
     
     guil->setMinAngle(0);
-    guil->setMaxAngle(360);
+    guil->setMaxAngle(30);
     guil->setAngleStep(1);
-    guil->setAngleThresh(10000);
+    guil->setAngleThresh(1000);
     
     guil->setMinScale(0.5);
-    guil->setMaxScale(2);
+    guil->setMaxScale(1.5);
     guil->setScaleStep(0.05);
-    guil->setScaleThresh(1000);
+    guil->setScaleThresh(100);
     
-    guil->setPosThresh(100);
+    guil->setPosThresh(10);
     
     alg = guil;
     
